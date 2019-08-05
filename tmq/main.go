@@ -46,7 +46,7 @@ import (
 
 const (
 	PGM     = "tmq.go"
-	VER     = "0.0.1"
+	VER     = "0.0.2"
 	VERDATE = "04Aug2019"
 )
 
@@ -83,11 +83,16 @@ func main() {
 		}
 		return topic.Qos
 	})
+	// run server as a Go routine
 	s.Run()
 	log.Printf("INFO Server: %s started.\n", PGM)
+
+	// wait for shut down signal from OS
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 	<-signalCh
+
+	// shut down the server
 	s.Stop(context.Background())
 
 	log.Printf("INFO Server: %s ended.\n", PGM)
